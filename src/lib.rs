@@ -110,6 +110,32 @@
 //! If you know your ranges will be closed, you can use [`excl_classify`] or [`incl_classify`] to
 //! determine the [`RangeOverlap`] without needing to wrap the range ends in `Some()`.
 //! 
+//! One assumption this crate makes is that an end being open means the same thing for both ranges.
+//! For example:
+//! 
+//! ```
+//! # use range_overlap::{classify_any, RangeOverlap};
+//! 
+//! let overlap = classify_any(None, Some(5), None, Some(10), false);
+//! assert_eq!(overlap, RangeOverlap::AInsideB);
+//! ```
+//! 
+//! Here, `None` is assumed to mean the same thing for both ranges, essentially negative infinity.
+//! Since this means there can be no point in A not also in B, the result is `AInsideB`. Another
+//! interesting case is when both ranges are fully open:
+//! 
+//! ```
+//! # use range_overlap::{classify_any, RangeOverlap};
+//! 
+//! // With literal `None`s we had to give the type T as i32, since there was nothing
+//! // for Rust to infer T from. You will almost never need to do this in practice.
+//! let overlap = classify_any::<i32>(None, None, None, None, false);
+//! assert_eq!(overlap, RangeOverlap::AEqualsB);
+//! ```
+//! 
+//! Again, since `None` is taken to mean the same thing for both A and B, all points in one
+//! must be in the other, so these two are equal ranges.
+//! 
 //! If you only need to determine if two ranges overlap, but not how, you can either use the 
 //! [`RangeOverlap::has_overlap`] method, or call one of the convenience methods:
 //! 
